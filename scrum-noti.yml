@@ -1,0 +1,30 @@
+name: Send Mattermost Scrum Notification
+
+on:
+  schedule:
+    # GitHub Actions의 Cron은 UTC 기준입니다.
+    # KST 화요일 09:30 = UTC 화요일 00:30
+    - cron: '30 0 * * 2'
+  workflow_dispatch: # 웹 UI에서 '수동 실행' 테스트를 할 수 있게 해주는 옵션
+
+jobs:
+  notify:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Send notification via Webhook
+        env:
+          WEBHOOK_URL: ${{ secrets.MATTERMOST_WEBHOOK_URL }}
+        run: |
+          PAYLOAD=$(cat << 'EOF'
+          {
+            "username": "Scrum Bot",
+            "icon_emoji": "alarm_clock",
+            "text": "### 🔔 화요일 데일리 스크럼 알림\n\n모두 화요일 스크럼 준비해 주세요! (@channel)\n\n* **오늘 할 일 공유**\n* **이슈 및 블로커 공유**"
+          }
+          EOF
+          )
+
+          curl -i -X POST \
+            -H 'Content-Type: application/json' \
+            -d "$PAYLOAD" \
+            "$WEBHOOK_URL"
