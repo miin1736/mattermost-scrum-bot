@@ -2,7 +2,7 @@ name: Send Mattermost Scrum Notification
 
 on:
   schedule:
-    - cron: '30 0 * * 2'
+    - cron: '56 2 * * 2'
   workflow_dispatch:
 
 jobs:
